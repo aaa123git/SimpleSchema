@@ -43,7 +43,7 @@ class Field:
         self._type = type_
         self._default = default
         self._description = description
-        self._process = converter
+        self._converter = converter
 
     def isinstance(self, obj):
         return isinstance(obj, self._type)
@@ -120,8 +120,8 @@ class BaseModel(dict, metaclass=ModelMetaClass):
                 if not field.isinstance(self[field_name]):
                     raise FieldValidationError(key=field_name, value=self[field_name], expected_type=field._type,
                                                msg="type error")
-                if field._process is not None:
-                    self[field_name] = field._process(self[field_name])
+                if field._converter is not None:
+                    self[field_name] = field._converter(self[field_name])
             elif field.has_default_value():
                 if field._default == Field.OPTIONAL:
                     """missing this attribute is OK"""
